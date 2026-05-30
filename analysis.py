@@ -4,6 +4,7 @@ Phân tích điểm kiểm tra của học sinh
 
 import statistics
 from typing import List, Dict
+from datetime import datetime
 
 # Dữ liệu điểm kiểm tra mẫu (thang điểm 100)
 test_scores = {
@@ -40,6 +41,48 @@ def classify_score(score: float) -> str:
         return "Trung bình"
     else:
         return "Yếu"
+
+
+def export_to_file(all_analyses: List[Dict], best_subject: Dict,
+                   worst_subject: Dict, classification_count: Dict,
+                   overall_average: float, filename: str = "analysis_results.txt"):
+    """Xuất kết quả phân tích ra file text"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write("=" * 60 + "\n")
+        f.write("PHÂN TÍCH ĐIỂM KIỂM TRA HỌC SINH\n")
+        f.write(f"Thời gian: {timestamp}\n")
+        f.write("=" * 60 + "\n\n")
+
+        # Phân tích từng môn học
+        for analysis in all_analyses:
+            f.write(f"📚 Môn: {analysis['môn_học']}\n")
+            f.write(f"   Số học sinh: {analysis['số_học_sinh']}\n")
+            f.write(f"   Điểm trung bình: {analysis['điểm_trung_bình']}\n")
+            f.write(f"   Điểm cao nhất: {analysis['điểm_cao_nhất']}\n")
+            f.write(f"   Điểm thấp nhất: {analysis['điểm_thấp_nhất']}\n")
+            f.write(f"   Điểm trung vị: {analysis['điểm_trung_vị']}\n")
+            f.write(f"   Độ lệch chuẩn: {analysis['độ_lệch_chuẩn']}\n\n")
+
+        # Tổng kết
+        f.write("=" * 60 + "\n")
+        f.write("TỔNG KẾT\n")
+        f.write("=" * 60 + "\n")
+        f.write(f"✅ Môn có điểm TB cao nhất: {best_subject['môn_học']} ({best_subject['điểm_trung_bình']})\n")
+        f.write(f"⚠️  Môn có điểm TB thấp nhất: {worst_subject['môn_học']} ({worst_subject['điểm_trung_bình']})\n\n")
+
+        # Phân loại
+        f.write("=" * 60 + "\n")
+        f.write("PHÂN LOẠI ĐIỂM MÔN TOÁN\n")
+        f.write("=" * 60 + "\n")
+        for classification, count in sorted(classification_count.items(),
+                                           key=lambda x: x[1], reverse=True):
+            f.write(f"   {classification}: {count} học sinh\n")
+        f.write("\n")
+
+        # Điểm trung bình chung
+        f.write(f"📊 Điểm trung bình chung tất cả các môn: {overall_average}\n")
 
 
 def main():
@@ -95,6 +138,13 @@ def main():
     overall_average = round(statistics.mean(all_scores), 2)
     print(f"📊 Điểm trung bình chung tất cả các môn: {overall_average}")
     print()
+
+    # Xuất kết quả ra file
+    export_to_file(all_analyses, best_subject, worst_subject,
+                   classification_count, overall_average)
+    print("=" * 60)
+    print("✅ Đã xuất kết quả phân tích ra file: analysis_results.txt")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
