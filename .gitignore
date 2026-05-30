@@ -61,4 +61,5 @@ Thumbs.db
 *.log
 *.csv
 *.xlsx
+*_results.txt
 output/
